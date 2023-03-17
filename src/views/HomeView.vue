@@ -1,17 +1,12 @@
 <template>
   <div class="Home">
+    <div v-if="error"><ErrorHandler :errorMessage="error" /></div>
     <div v-for="repo in paginatedRepos" :key="repo.id">
       <ReposVue :repo="repo" />
     </div>
     <div class="pagination">
       <button v-if="page > 1" @click="page--">Prev</button>
-      <button
-        v-for="pageNumber in pages"
-        :key="pageNumber"
-        @click="page = pageNumber"
-      >
-        {{ pageNumber }}
-      </button>
+
       <button v-if="page < pageCount" @click="page++">Next</button>
     </div>
   </div>
@@ -19,30 +14,30 @@
 
 <script>
 import ReposVue from "@/components/ReposVue.vue";
-import HomeLinks from "@/components/HomeLinks.vue";
+import ErrorHandler from "@/components/ErrorHandler.vue";
 import { onMounted, ref, computed } from "vue";
+
 export default {
   components: {
     ReposVue,
-    HomeLinks,
+    ErrorHandler,
   },
   setup() {
     // FETCH REPOS
     const repos = ref([]);
     const page = ref(1);
+    const error = ref(null);
     const pageSize = 5;
     onMounted(async () => {
-      try {
-        const response = await fetch(
-          "https://api.github.com/users/HedrisTemmyTop/repos"
-        );
-        const data = await response.json();
-        console.log(data);
-
+      const response = await fetch(
+        "https://api.github.com/users/HedrisTemmyTop/repos"
+      );
+      const data = await response.json();
+      if (response.ok) {
         repos.value = data;
-      } catch (error) {
-        console.log(error);
       }
+
+      error.value = data.message;
     });
 
     const paginatedRepos = computed(() => {
@@ -69,12 +64,25 @@ export default {
       pages,
       pageCount,
       repos,
+      error,
     };
   },
 };
 </script>
 
 <style scoped>
+.SearchBtn {
+  background-color: var(--button-color);
+  width: 10rem;
+  border: 0;
+  margin-left: 1.5rem;
+  cursor: pointer;
+  font-size: 1.4rem;
+
+  height: 4rem;
+  border-radius: 1rem;
+  color: var(--white);
+}
 .pagination {
   display: flex;
   justify-content: center;

@@ -38,6 +38,15 @@ const routes = [
     name: "terms",
     component: () => import("../views/TermsCondition.vue"),
   },
+  {
+    path: "/error-page",
+    name: "error page",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/ErrorPage.vue"),
+  },
 ];
 
 const router = createRouter({
